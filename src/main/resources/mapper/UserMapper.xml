@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pluto.tnvote.mapper.UserMapper">
+	<resultMap type="com.pluto.tnvote.pojo.User" id="User">
+		<id column="id" property="id"/>
+		<result column="account" 			property="account"/>
+		<result column="id" 			property="id"/>
+		<result column="name" 			property="name"/>
+		<result column="password" 			property="password"/>
+		<result column="phone" 			property="phone"/>
+		<result column="sex" 			property="sex"/>
+		<result column="email" 			property="email"/>
+		<result column="remark" 			property="remark"/>
+	</resultMap>
+
+	<insert id="create" keyProperty="id" useGeneratedKeys="true" parameterType="com.pluto.tnvote.pojo.User">
+		insert into user(
+			account,
+			id,
+			name,
+			password,
+			phone,
+			sex,
+			email,
+			remark
+		)values(
+			#{account},
+			#{id},
+			#{name},
+			#{password},
+			#{phone},
+			#{sex},
+			#{email},
+			#{remark}
+		)
+	</insert>
+
+	<select id="query" resultMap="User">
+		select * from user
+		<include refid="UserFindCriteria"/>
+		<if test="order_by_column!=null and order_by_column!=''">order by ${order_by_column} ${order_by}</if>
+		<if test="offset!=null and rows!=null">limit ${offset} , ${rows}</if>
+	</select>
+	
+	<select id="count" resultType="int">
+		select count(1) from user
+		<include refid="UserFindCriteria"/>
+	</select>
+	
+	<select id="detail" resultMap="User">
+		select * from user
+		<include refid="UserFindCriteria"/>
+		limit 1
+	</select>
+	
+	<delete id="deleteU" parameterType="com.pluto.tnvote.pojo.User" >
+		delete from user
+		<include refid="UserFindCriteria" />
+	</delete>
+	<update id="updateU" parameterType="com.pluto.tnvote.pojo.User">
+		update user
+		<include refid="UserUpdateCriteria"/>
+		<include refid="UserFindCriteria"/>
+	</update>
+	<sql id="UserFindCriteria">
+		<where>
+			<if test="account != null and account != ''">and account = #{account}</if>
+			<if test="id != null and id != '' ">and id = #{id}</if>
+			<if test="name != null and name != ''">and name = #{name}</if>
+			<if test="password != null and password != ''">and password = #{password}</if>
+			<if test="phone != null and phone != ''">and phone = #{phone}</if>
+			<if test="email != null and email != ''">and email = #{email}</if>
+			<if test="sex != null and sex != ''">and sex = #{sex}</if>
+			<if test="remark != null and remark != ''">and remark = #{remark}</if>
+		</where>
+	</sql>
+	<sql id="UserUpdateCriteria">
+		<set>
+			<if test="updateAccount != null and updateAccount != ''">account = #{updateAccount},</if>
+			<if test="updateId != null and updateId != '' ">id = #{updateId},</if>
+			<if test="updateName != null and updateName != '' ">name = #{updateName},</if>
+			<if test="updatePassword != null and updatePassword != ''">password = #{updatePassword},</if>
+			<if test="updatePhone != null and updatePhone != ''">phone = #{updatePhone},</if>
+			<if test="updateEmail != null and updateEmail != ''">email = #{updateEmail},</if>
+			<if test="updateSex != null and updateSex != ''">sex = #{updateSex},</if>
+			<if test="updateRemark != null and updateRemark != ''">remark = #{updateRemark},</if>
+		</set>
+	</sql>
+</mapper>

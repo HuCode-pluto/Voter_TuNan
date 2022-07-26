@@ -1,0 +1,27 @@
+{
+  "homeInfo": {
+    "title": "管理",
+    "href": "/survey/list"
+  },
+  "logoInfo": {
+    "title": "图南投票系统",
+    "image": "static/images/华为.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "投票/问卷",
+      "icon": "fa fa-address-book",
+      "href": "/survey/list",
+      "icon": "fa fa-window-maximize",
+      "target": "_self"
+    },
+    {
+      "title": "用户信息",
+      "icon": "fa fa-slideshare",
+      "href": "/user/userlist",
+      "icon": "fa fa-superpowers",
+      "target": "_self"
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${survey.title}"></title>
+  <link rel="stylesheet" href="../../static/css/question.css" media="all">
+  <link rel="stylesheet" href="../../static/lib/layui-src/css/layui.css" media="all">
+  <link rel="stylesheet" href="../../static/lib/font-awesome-4.7.0/css/font-awesome.css" media="all">
+  <link rel="stylesheet" href="../../static/css/public.css" media="all">
+  <style>
+    .bg{
+      background-size: 100% 100%;
+      margin:0px;
+      padding: 0px;
+    }
+  </style>
+  <style th:inline="text">
+    .bg{
+      background: url("[[@{/}]]file/[[${survey.bgimg}]]");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+    }
+  </style>
+</head>
+<body class="bg">
+<div th:value="${survey.title}" style="text-align: center;font-size: 24px;padding-top: 20px;box-sizing: border-box;">
+</div>
+<div th:value="${survey.remark}" style="text-align: center;font-size: 16px;padding-top: 20px;box-sizing: border-box;color: #999;">
+</div>
+<div class="layuimini-container" style="position: absolute;bottom: 0px;top:100px;left: 0px;right:0px;margin: 10px;">
+  <div class="preview" id="preview" style="overflow: auto;">
+    <ul class="content">
+      <div th:each="question,status:${survey.tbQuestions}">
+        <div th:if="${question.type}-1== 0 or ${question.type}-2==0 ">
+          <div class="radioTemplate spliter">
+            <li class="using radio">
+              <input type="hidden" name="questionId" th:xtype="${question.type}" th:value="${question.id}">
+              <div class="title">
+                <div></div>
+                <div class="no_edit"><strong><div th:text="${status.count}+'、'+${question.title}"></div></strong></div>
+                <div class="no_edit" th:text="${question.remark}"></div>
+              </div>
+              <div class="options">
+                <ul>
+                  <div th:each="option:${question.options}">
+                    <li>
+                      <table>
+                        <tr>
+                          <td>
+                            <input class="myselect" type="radio" th:if="${question.type}-1==0" th:name="${question.id}" th:value="${option.id}"></input>
+                            <input class="myselect" type="checkbox" th:if="${question.type}-2==0" th:name="${question.id}" th:value="${option.id}"></input>
+                          </td>
+                          <td th:text="${option.opt}"></td>
+                        </tr>
+                      </table>
+                    </li>
+                  </div>
+                </ul>
+              </div>
+            </li>
+          </div>
+        </div>
+        <div th:if="${question.type}-3== 0  or ${question.type} -4== 0">
+          <div class="inputTemplate spliter">
+            <li class="using inputx">
+              <input type="hidden" name="questionId" th:xtype="${question.type}" th:value="${question.id}">
+              <div class="no_edit"><strong><div th:text="${status.count}+'、'+${question.title}"></div></strong></div>
+              <div class="title">
+                <div class="no_edit" th:text="${question.remark}"></div>
+              </div>
+              <div>
+                <input type="text" class="mytext" th:if="${question.type}-3==0 " th:name="${question.id}">
+                <textarea th:if="${question.type}-4==0 " th:name="${question.id}" class="mytext"></textarea>
+              </div>
+            </li>
+          </div>
+
+        </div>
+      </div>
+      <li style="text-align: center">
+        <button class="layui-btn mysave">立即提交</button>
+      </li>
+    </ul>
+  </div>
+  <div>
+  </div>
+</div>
+<script src="../../static/lib/layui-src/layui.js" charset="utf-8"></script>
+<script src="../../static/js/lay-config.js" charset="utf-8"></script>
+<script>
+  // var TestDemo= $('.myselect').val();
+  // TestDemo.isEmpty = function(data) {
+  //   return data == null || data == undefined || data == "";
+  // }
+
+
+
+
+  layui.use(['jquery','layer'],function () {
+    let $ = layui.jquery, layer = layui.layer;
+
+
+
+
+    $('.mysave').click(function(){
+      var optionArray = $('.myselect');
+      optionArray.each(function(index){
+        console.log($(this).prop("name"));
+      })
+      var list = [];//待提交的数组
+      var questionArr = $('input[name="questionId"]');
+
+      console.log("12313::=--------------"+questionArr.length);
+
+      questionArr.each(function(index){
+        var that = $(this);
+        var obj = {};
+
+        obj.questionId = $(this).val();
+        obj.surveyId = "[[${survey.id}]]";
+        obj.type = $(this).attr("xtype");
+
+        //一个问题产生一个数组结果
+        if(obj.type == 1 || obj.type == 2){
+          var tmp = [];
+          optionArray.each(function(index){
+
+            if($(this).prop("name") == (that.val())){
+              if($(this).prop("checked")){
+
+                tmp.push($(this).val());
+
+              }
+            }
+          })
+          obj.opts = tmp;
+        }else {
+
+          obj.result = $('.mytext').val();
+
+        }
+
+        list.push(obj);
+
+      })
+
+      $.ajax({
+        url:"../submit",
+        type:"POST",
+        contentType:'application/json',
+        dataType:'json',
+        data:JSON.stringify(list),
+        success:function(data){
+          layer.msg(data.msg,{time:500},
+                  function(){
+                   window.location.href="success";
+                  });
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
